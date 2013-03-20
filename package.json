@@ -1,0 +1,15 @@
+{
+    "name": "jekyll-hook",
+    "description": "A server that listens for GitHub webhook posts and renders a Jekyll site",
+    "author": "dhcole",
+    "version": "0.0.1",
+    "dependencies": {
+        "express": "3.x",
+        "queue-async": "1.0.1",
+        "underscore": "1.4.4",
+        "emailjs": "0.3.4",
+        "xml2js": "0.2.6",
+        "js-yaml": "2.0.3"
+    },
+    "private": true
+}
