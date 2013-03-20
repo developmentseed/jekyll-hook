@@ -6,10 +6,7 @@
     "dependencies": {
         "express": "3.x",
         "queue-async": "1.0.1",
-        "underscore": "1.4.4",
-        "emailjs": "0.3.4",
-        "xml2js": "0.2.6",
-        "js-yaml": "2.0.3"
+        "emailjs": "0.3.4"
     },
     "private": true
 }
