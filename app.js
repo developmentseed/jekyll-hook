@@ -16,7 +16,7 @@ app.post('/hooks/jekyll', function(req, res){
     var cmd  = '';
 
     // Close connection
-    res.send(200);
+    res.send(202);
 
     // Process webhook data
     data.repo    = data.repository.name;
