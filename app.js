@@ -2,20 +2,18 @@ var fs      = require('fs');
 var express = require('express');
 var app     = express();
 var queue   = require('queue-async');
-var exec    = require('child_process').exec,
-    child,
-    cmd;
+var exec    = require('child_process').exec;
 var email   = require('emailjs/email');
 var config  = require('./config.json');
 var mailer  = email.server.connect(config.email);
-var data;
 
 app.use(express.bodyParser());
 
 // Receive webhook post
 app.post('/hooks/jekyll', function(req, res){
-    var q = queue(1);
-    data = JSON.parse(req.body.payload);
+    var data = JSON.parse(req.body.payload);
+    var q    = queue(1);
+    var cmd  = '';
 
     // Close connection
     res.send(200);
@@ -41,7 +39,7 @@ app.post('/hooks/jekyll', function(req, res){
     if (!fs.existsSync(data.source)) {
         // Git clone repo from GitHub
         cmd = 'git clone ' + data.url + ' ' + data.source;
-        q.defer(run, cmd);
+        q.defer(run, data, cmd);
     }
 
     // Git checkout appropriate branch, pull latest code
@@ -49,18 +47,18 @@ app.post('/hooks/jekyll', function(req, res){
           ' && git checkout ' + data.branch +
           ' && git pull origin ' + data.branch +
           ' && cd -';
-    q.defer(run, cmd);
+    q.defer(run, data, cmd);
 
     // Run jekyll
     cmd = 'cd ' + data.source +
           ' && jekyll ' + data.source + ' ' + data.dest +
           ' --no-server --no-auto --base-url="' + data.baseurl + '"' +
           ' && cd -';
-    q.defer(run, cmd);
+    q.defer(run, data, cmd);
 
     // Sync files (remove old files, copy new ones)
     cmd = 'rm -rf ' + data.site + ' && mv ' + data.dest + ' ' + data.site;
-    q.defer(run, cmd);
+    q.defer(run, data, cmd);
 
     // Done processing
     q.await(function() {
@@ -88,9 +86,10 @@ app.post('/hooks/jekyll', function(req, res){
 app.listen(8080);
 console.log('Listening on port 8080');
 
-function run(cmd, cb) {
+function run(data, cmd, cb) {
+
     console.log('Running: ' + cmd);
-    child = exec(cmd, function (error, stdout, stderr) {
+    exec(cmd, function (error, stdout, stderr) {
         console.log('stdout: ' + stdout);
         console.log('stderr: ' + stderr);
 
