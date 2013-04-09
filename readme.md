@@ -1,6 +1,6 @@
 # jekyll-hook
 
-A server that listens for webhook posts from GitHub, generates a site with Jekyll, and moves it somewhere to be served. Use this to run your own GitHub Pages-style web server. Great for when you need to serve your websites behind a firewall, need extra server-level features like HTTP basic auth (see `default` file for Nginx config with basic auth), or want to host your site directly on a CDN or file host like S3.
+A server that listens for webhook posts from GitHub, generates a site with Jekyll, and moves it somewhere to be served. Use this to run your own GitHub Pages-style web server. Great for when you need to serve your websites behind a firewall, need extra server-level features like HTTP basic auth (see `default` file for Nginx config with basic auth), or want to host your site directly on a CDN or file host like S3. It's cutomizable with two user-configurable shell scripts and a config file.
 
 ## Installation
 
@@ -15,8 +15,11 @@ Copy the following JSON to `config.json` in the application's root directory.
 {
     "gh_server": "github.com",
     "branch": "master",
-    "temp_directory": "/home/ubuntu/jekyll-hook",
-    "site_directory": "/usr/share/nginx/www",
+    "temp": "/home/ubuntu/jekyll-hook",
+    "scripts": {
+        "build": "./scripts/build.sh",
+        "publish": "./scripts/publish.sh"
+    },
     "email": {
        "user": "", 
        "password": "", 
@@ -30,8 +33,10 @@ Configuration attributes:
 
 - `gh_server` The GitHub server from which to pull code
 - `branch` The branch to watch for changes
-- `temp_directory` A directory to store code and site files
-- `site_directory` A directory to publish the site
+- `temp` A directory to store code and site files
+- `scripts`
+    - `build` A script to run to build the site
+    - `publish` A script to run to publish the site
 - `email` Optional. Settings for sending email alerts
     - `user` Sending email account's user name (e.g. `example@gmail.com`)
     - `password` Sending email account's password
@@ -40,9 +45,63 @@ Configuration attributes:
 
 ## Usage
 
-- run once: `$ node app.js`
-- use [forever](https://github.com/nodejitsu/forever) to run as server: `$ forever app.js`
+- run as executable: `$ ./jekyll-hook.js`
 
-## Web server
+## Publishing content
 
-Serve content from a simple webserver link Nginx (the `default` file is a sample Nginx configuration with HTTP basic auth) or use s3cmd or rsync to mirror files on S3 or a CDN.
+The stock `build.sh` copies rendered site files to subdirectories under a web server's `www` root directory. For instance, use this script and NGINX with the following configuration file to serve static content behind HTTP basic authentication:
+
+```
+server {
+    root /usr/share/nginx/www;
+    index index.html index.htm;
+
+    # Make site accessible from http://localhost/
+    server_name localhost;
+
+    location / {
+        # First attempt to serve request as file, then
+        # as directory, then fall back to index.html
+        try_files $uri $uri/ /index.html;
+
+        # Optional basic auth restriction
+        # auth_basic "Restricted";
+        # auth_basic_user_file /etc/nginx/.htpasswd;
+    }
+}
+```
+
+Replace this script with whatever you need for your particular hosting environment.
+
+## Dependencies
+
+Here's a sample script to install the approriate dependencies on an Ubunutu server:
+
+```sh
+#!/bin/sh
+
+# Install node and depencencies
+sudo apt-get update -y
+sudo apt-get install python-software-properties python g++ make -y
+sudo add-apt-repository ppa:chris-lea/node.js -y
+sudo apt-get update -y
+sudo apt-get install nodejs npm -y
+
+# Forever to keep server running
+sudo npm install -g forever
+
+# Git
+sudo apt-get install git -y
+
+# Ruby
+sudo apt-get install ruby1.8 -y
+sudo apt-get install rubygems -y
+
+# Jekyll
+sudo gem install jekyll --version "0.12.0"
+sudo gem install rdiscount -- version "1.6.8"
+sudo gem install json --version "1.6.1"
+
+# Nginx for static content
+sudo apt-get install nginx -y
+```
