@@ -1,13 +1,14 @@
 # jekyll-hook
 
-A server that listens for webhook posts from GitHub, generates a site with Jekyll, and moves it somewhere to be served. Use this to run your own GitHub Pages-style web server. Great for when you need to serve your websites behind a firewall, need extra server-level features like HTTP basic auth (see `default` file for Nginx config with basic auth), or want to host your site directly on a CDN or file host like S3. It's cutomizable with two user-configurable shell scripts and a config file.
+A server that listens for webhook posts from GitHub, generates a website with Jekyll, and moves it somewhere to be published. Use this to run your own GitHub Pages-style web server. Great for when you need to serve your websites behind a firewall, need extra server-level features like HTTP basic auth (see below for an NGINX config with basic auth), or want to host your site directly on a CDN or file host like S3. It's cutomizable with two user-configurable shell scripts and a config file.
 
 ## Installation
 
-- `build.sh` installs server dependencies for Ubuntu Linux
 - run `$ npm install` to install app dependencies
 
 ## Configuration
+
+Adjust `build.sh` and `publish.sh` to suit your workflow. By default, they generate a site with Jekyll and publish it to an NGINX web directory.
 
 Copy the following JSON to `config.json` in the application's root directory.
 

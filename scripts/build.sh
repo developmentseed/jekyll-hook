@@ -1,5 +1,9 @@
 #!/bin/bash
-set -e 
+set -e
+
+# This script is meant to be run automatically
+# as part of the jekyll-hook application.
+# https://github.com/developmentseed/jekyll-hook
 
 repo=$1
 branch=$2
