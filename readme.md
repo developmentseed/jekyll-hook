@@ -5,6 +5,8 @@ A server that listens for webhook posts from GitHub, generates a website with Je
 ## Installation
 
 - run `$ npm install` to install app dependencies
+- Set a [Web hook]() on your GitHub repository that points to your jekyll-hook server `http://example.com:8080/hooks/jekyll/:branch`, where `:branch` is the branch you want to publish. Usually this is `gh-pages` or `master` for `*.github.com` / `*.github.io` repositories.
+
 
 ## Configuration
 
@@ -15,25 +17,27 @@ Copy the following JSON to `config.json` in the application's root directory.
 ```json
 {
     "gh_server": "github.com",
-    "branch": "master",
     "temp": "/home/ubuntu/jekyll-hook",
     "scripts": {
         "build": "./scripts/build.sh",
         "publish": "./scripts/publish.sh"
     },
     "email": {
-       "user": "", 
-       "password": "", 
-       "host": "", 
-       "ssl": true
-    }
+        "user": "", 
+        "password": "", 
+        "host": "", 
+        "ssl": true
+    },
+    "accounts": [
+        "developmentseed",
+        "mapbox"
+    ]
 }
 ```
 
 Configuration attributes:
 
 - `gh_server` The GitHub server from which to pull code
-- `branch` The branch to watch for changes
 - `temp` A directory to store code and site files
 - `scripts`
     - `build` A script to run to build the site
@@ -43,7 +47,7 @@ Configuration attributes:
     - `password` Sending email account's password
     - `host` SMTP host for sending email account (e.g. `smtp.gmail.com`) 
     - `ssl` `true` or `false` for SSL
-
+- `accounts` An array of accounts or organizations whose repositories can be used with this server
 ## Usage
 
 - run as executable: `$ ./jekyll-hook.js`
@@ -73,6 +77,8 @@ server {
 ```
 
 Replace this script with whatever you need for your particular hosting environment.
+
+You probably want to configure your server to only respond POST requests from GitHub's public IP addresses, found on the webhooks settings page.
 
 ## Dependencies
 

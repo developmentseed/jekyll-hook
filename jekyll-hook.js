@@ -11,8 +11,9 @@ var mailer  = email.server.connect(config.email);
 app.use(express.bodyParser());
 
 // Receive webhook post
-app.post('/hooks/jekyll', function(req, res){
+app.post('/hooks/jekyll/:branch', function(req, res){
     var data = JSON.parse(req.body.payload);
+    var branch = req.params.branch;
     var params = [];
 
     // Parse webhook data for internal variables
@@ -23,9 +24,15 @@ app.post('/hooks/jekyll', function(req, res){
     // Close connection
     res.send(202);
 
-    // End early if not master branch
-    if (data.branch !== config.branch) {
-        console.log('Not ' + config.branch + ' branch.');
+    // End early if not permitted account
+    if (config.accounts.indexOf(data.owner) === -1) {
+        console.log(data.owner + ' is not an authorized account.');
+        return;
+    }
+
+    // End early if not permitted branch
+    if (data.branch !== branch) {
+        console.log('Not ' + branch + ' branch.');
         return;
     }
 
