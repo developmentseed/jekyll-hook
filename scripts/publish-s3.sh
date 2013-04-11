@@ -5,6 +5,11 @@ set -e
 # as part of the jekyll-hook application.
 # https://github.com/developmentseed/jekyll-hook
 
+# This requires a forked version of `s3cmd` that correctly
+# handleds --exclude files with the --delete-removed flag.
+# Clone the fork https://github.com/developmentseed/s3cmd
+# and install it with `python setup.py install`.
+
 repo=$1
 branch=$2
 owner=$3
@@ -13,7 +18,7 @@ source=$5
 build=$6
 
 # S3 bucket
-bucket=developmentseed.org.jekyll-hook
+bucket=# set your S3 bucket here #
 
 if [[ "$repo" == *.github.* ]]
 then
