@@ -90,6 +90,8 @@ Here's a sample script to install the approriate dependencies on an Ubunutu serv
 # Install node and depencencies
 sudo apt-get update -y
 sudo apt-get install python-software-properties python g++ make -y
+# On Ubuntu 12.10 and greater, add-apt-repository is provided by the software-properties-common package
+#sudo apt-get install software-properties-common -y
 sudo add-apt-repository ppa:chris-lea/node.js -y
 sudo apt-get update -y
 sudo apt-get install nodejs npm -y
