@@ -94,7 +94,7 @@ sudo apt-get install python-software-properties python g++ make -y
 #sudo apt-get install software-properties-common -y
 sudo add-apt-repository ppa:chris-lea/node.js -y
 sudo apt-get update -y
-sudo apt-get install nodejs npm -y
+sudo apt-get install nodejs -y
 
 # Forever to keep server running
 sudo npm install -g forever
