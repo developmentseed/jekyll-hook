@@ -18,7 +18,8 @@
     "dependencies": {
         "express": "3.x",
         "emailjs": "0.3.4",
-        "queue-async": "1.0.x"
+        "queue-async": "1.0.x",
+        "libyaml": "0.2.x"
     },
     "private": true
 }

@@ -12,7 +12,7 @@ A server that listens for webhook posts from GitHub, generates a website with Je
 
 Adjust `build.sh` and `publish.sh` to suit your workflow. By default, they generate a site with Jekyll and publish it to an NGINX web directory.
 
-Copy `config.sample.json` to `config.json` in the root directory and customize.
+Copy `config.sample.yml` to `config.yml` in the root directory and customize.
 
 Configuration attributes:
 
