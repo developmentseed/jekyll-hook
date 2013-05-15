@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-var config  = require('./config.json');
+var yaml    = require('libyaml');
+var config  = yaml.readFileSync('./config.yml');
 var fs      = require('fs');
 var express = require('express');
 var app     = express();

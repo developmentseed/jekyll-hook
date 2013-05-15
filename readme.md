@@ -12,27 +12,21 @@ A server that listens for webhook posts from GitHub, generates a website with Je
 
 Adjust `build.sh` and `publish.sh` to suit your workflow. By default, they generate a site with Jekyll and publish it to an NGINX web directory.
 
-Copy the following JSON to `config.json` in the application's root directory.
+Copy the following JSON to `config.yml` in the application's root directory.
 
-```json
-{
-    "gh_server": "github.com",
-    "temp": "/home/ubuntu/jekyll-hook",
-    "scripts": {
-        "build": "./scripts/build.sh",
-        "publish": "./scripts/publish.sh"
-    },
-    "email": {
-        "user": "", 
-        "password": "", 
-        "host": "", 
-        "ssl": true
-    },
-    "accounts": [
-        "developmentseed",
-        "mapbox"
-    ]
-}
+```yaml
+gh_server: github.com
+temp: /home/ubuntu/jekyll-hook
+scripts:
+  build: ./scripts/build.sh
+  publish: ./scripts/publish.sh
+email:
+  user: ""
+  password: ""
+  host: ""
+accounts:
+  - developmentseed
+  - mapbox
 ```
 
 Configuration attributes:
