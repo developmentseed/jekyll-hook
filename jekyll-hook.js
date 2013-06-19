@@ -32,12 +32,14 @@ app.post('/hooks/jekyll/:branch', function(req, res) {
         // End early if not permitted account
         if (config.accounts.indexOf(data.owner) === -1) {
             console.log(data.owner + ' is not an authorized account.');
+            if (typeof cb === 'function') cb();
             return;
         }
 
         // End early if not permitted branch
         if (data.branch !== branch) {
             console.log('Not ' + branch + ' branch.');
+            if (typeof cb === 'function') cb();
             return;
         }
 
