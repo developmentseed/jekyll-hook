@@ -61,7 +61,7 @@ You probably want to configure your server to only respond POST requests from Gi
 
 ## Dependencies
 
-Here's a sample script to install the approriate dependencies on an Ubunutu server:
+Here's a sample script to install the approriate dependencies on an Ubuntu server:
 
 ```sh
 #!/bin/sh
