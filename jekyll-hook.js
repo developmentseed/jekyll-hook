@@ -15,34 +15,36 @@ app.use(express.bodyParser());
 // Receive webhook post
 app.post('/hooks/jekyll/:branch', function(req, res) {
 
+    var data = JSON.parse(req.body.payload);
+    var branch = req.params.branch;
+    var params = [];
+
+    // Parse webhook data for internal variables
+    data.repo = data.repository.name;
+    data.branch = data.ref.split('/')[2];
+    data.owner = data.repository.owner.name;
+
+    // End early if not permitted account
+    if (config.accounts.indexOf(data.owner) === -1) {
+        var err = data.owner + ' is not an authorized account.';
+        console.log(err);
+        res.send(403, err);
+        return;
+    }
+
+    // End early if not permitted branch
+    if (data.branch !== branch) {
+        var err = 'Not ' + branch + ' branch.';
+        console.log(err);
+        res.send(403, err);
+        return;
+    }
+
     // Close connection
     res.send(202);
 
     // Queue request handler
     tasks.defer(function(req, res, cb) {
-        var data = JSON.parse(req.body.payload);
-        var branch = req.params.branch;
-        var params = [];
-
-        // Parse webhook data for internal variables
-        data.repo = data.repository.name;
-        data.branch = data.ref.split('/')[2];
-        data.owner = data.repository.owner.name;
-
-        // End early if not permitted account
-        if (config.accounts.indexOf(data.owner) === -1) {
-            console.log(data.owner + ' is not an authorized account.');
-            if (typeof cb === 'function') cb();
-            return;
-        }
-
-        // End early if not permitted branch
-        if (data.branch !== branch) {
-            console.log('Not ' + branch + ' branch.');
-            if (typeof cb === 'function') cb();
-            return;
-        }
-
         // Process webhook data into params for scripts
         /* repo   */ params.push(data.repo);
         /* branch */ params.push(data.branch);
