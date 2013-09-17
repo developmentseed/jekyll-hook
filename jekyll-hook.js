@@ -15,6 +15,11 @@ app.use(express.bodyParser());
 // Receive webhook post
 app.post('/hooks/jekyll/:branch', function(req, res) {
 
+    if(req.body.payload === undefined){
+      res.send(400, "Please set `payload` parameter\n");
+      return;
+    }
+
     var data = JSON.parse(req.body.payload);
     var branch = req.params.branch;
     var params = [];
