@@ -5,6 +5,7 @@
         "build": "./scripts/build.sh",
         "publish": "./scripts/publish.sh"
     },
+    "secret": "",
     "email": {
         "user": "", 
         "password": "", 
