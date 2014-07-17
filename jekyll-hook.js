@@ -49,7 +49,7 @@ app.post('/hooks/jekyll/:branch', function(req, res) {
         /* owner  */ params.push(data.owner);
 
         /* giturl */
-        if (config.public-repo) {
+        if (config.public_repo) {
             params.push('https://' + config.gh_server + '/' + data.owner + '/' + data.repo + '.git');
         } else {
             params.push('git@' + config.gh_server + ':' + data.owner + '/' + data.repo + '.git');

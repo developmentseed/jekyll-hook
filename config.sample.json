@@ -1,7 +1,7 @@
 {
     "gh_server": "github.com",
     "temp": "/home/ubuntu/jekyll-hook",
-    "public-repo": true,
+    "public_repo": true,
     "scripts": {
         "build": "./scripts/build.sh",
         "publish": "./scripts/publish.sh"
