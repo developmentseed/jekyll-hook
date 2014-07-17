@@ -16,5 +16,7 @@ build=$6
 site="/usr/share/nginx/html/$repo"
 
 # Remove old site files, move new ones in place
-sudo rm -rf $site
-sudo mv $build $site
+# On amazon EC2 use sudo if nginx html forlder has root ownership
+
+rm -rf $site
+mv $build $site
