@@ -112,6 +112,19 @@ To kill or restart the background job:
 
 ## Publishing content
 
+### S3
+
+To publish the site on Amazon S3, you need to install S3cmd. On Ubuntu run:
+
+    $: sudo apt-get install s3cmd
+    $: s3cmd --configure
+
+For more information [read this](http://xmodulo.com/2013/06/how-to-access-amazon-s3-cloud-storage-from-command-line-in-linux.html).
+
+`scripts/publish-s3.sh` does the rest of the job for you. Just make sure to add your bucket name there.
+
+### More details on build.sh
+
 The stock `build.sh` copies rendered site files to subdirectories under a web server's `www` root directory. For instance, use this script and NGINX with the following configuration file to serve static content behind HTTP basic authentication:
 
 ```
