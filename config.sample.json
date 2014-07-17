@@ -14,6 +14,6 @@
         "ssl": true
     },
     "accounts": [
-        "developmentseed",
+        "developmentseed"
     ]
 }
