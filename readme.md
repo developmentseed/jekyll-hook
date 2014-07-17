@@ -45,6 +45,7 @@ If you receive an error similar to this `npm ERR! Error: EACCES, mkdir
 '/home/ubuntu/tmp/npm-2223-4myn3niN'` run:
 
     $: sudo chown -R ubuntu:ubuntu /home/ubuntu/tmp
+    $: npm install
 
 *You should replace `ubuntu` with your username*
 
