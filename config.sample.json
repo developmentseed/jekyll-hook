@@ -1,18 +1,18 @@
 {
     "gh_server": "github.com",
     "temp": "/home/ubuntu/jekyll-hook",
+    "public-repo": True,
     "scripts": {
         "build": "./scripts/build.sh",
         "publish": "./scripts/publish.sh"
     },
     "email": {
-        "user": "", 
-        "password": "", 
-        "host": "", 
+        "user": "",
+        "password": "",
+        "host": "",
         "ssl": true
     },
     "accounts": [
         "developmentseed",
-        "mapbox"
     ]
 }
