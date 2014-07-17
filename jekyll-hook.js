@@ -112,13 +112,15 @@ function run(file, params, cb) {
 }
 
 function send(body, subject, data) {
-    if (config.email && data.pusher.email) {
-        var message = {
-            text: body,
-            from: config.email.user,
-            to: data.pusher.email,
-            subject: subject
-        };
-        mailer.send(message, function(err) { if (err) console.warn(err); });
+    if (config.email.isActivated) {
+        if (config.email && data.pusher.email) {
+            var message = {
+                text: body,
+                from: config.email.user,
+                to: data.pusher.email,
+                subject: subject
+            };
+            mailer.send(message, function(err) { if (err) console.warn(err); });
+        }
     }
 }
