@@ -99,7 +99,7 @@ To launch in background run:
 
     $: forever start jekyll-hook.js
 
-To kill the background job:
+To kill or restart the background job:
 
 ```
     $: forever list
