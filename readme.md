@@ -2,21 +2,48 @@
 
 A server that listens for webhook posts from GitHub, generates a website with Jekyll, and moves it somewhere to be published. Use this to run your own GitHub Pages-style web server. Great for when you need to serve your websites behind a firewall, need extra server-level features like HTTP basic auth (see below for an NGINX config with basic auth), or want to host your site directly on a CDN or file host like S3. It's cutomizable with two user-configurable shell scripts and a config file.
 
+*This guide is tested on Ubuntu 14.0*
+
+## Dependencies Installation
+
+First install main dependencies
+
+    $: sudo apt-get update
+    $: sudo apt-get install git nodejs ruby ruby1.9.1-dev npm
+
+To keep server running we use Forever:
+
+    $: sudo npm install -g forever
+
+We also need Jekyll and Nginx
+
+    $: sudo gem install jekyll
+    $: sudo gem install rdiscount
+    $: sudo gem install json
+    $: sudo apt-get install nginx
+
 ## Installation
 
-- run `$ npm install` to install app dependencies
-- Set a [Web hook]() on your GitHub repository that points to your jekyll-hook server `http://example.com:8080/hooks/jekyll/:branch`, where `:branch` is the branch you want to publish. Usually this is `gh-pages` or `master` for `*.github.com` / `*.github.io` repositories.
+Clone the repo
 
+    $: git clone https://github.com/developmentseed/jekyll-hook.git
+
+Install dependencies:
+
+    $: npm install
+
+Set a [Web hook]() on your GitHub repository that points to your jekyll-hook server `http://example.com:8080/hooks/jekyll/:branch`, where `:branch` is the branch you want to publish. Usually this is `gh-pages` or `master` for `*.github.com` / `*.github.io` repositories.
 
 ## Configuration
 
-Adjust `build.sh` and `publish.sh` to suit your workflow. By default, they generate a site with Jekyll and publish it to an NGINX web directory.
+Copy `config.sample.json` to `config.json` in the root directory and customize:
 
-Copy `config.sample.json` to `config.json` in the root directory and customize.
+    $: cp config.sample.json config.json
+    $: vim config.json
 
 Configuration attributes:
 
-- `gh_server` The GitHub server from which to pull code
+- `gh_server` The GitHub server from which to pull code, e.g. github.com
 - `temp` A directory to store code and site files
 - `scripts`
     - `build` A script to run to build the site
@@ -24,9 +51,12 @@ Configuration attributes:
 - `email` Optional. Settings for sending email alerts
     - `user` Sending email account's user name (e.g. `example@gmail.com`)
     - `password` Sending email account's password
-    - `host` SMTP host for sending email account (e.g. `smtp.gmail.com`) 
+    - `host` SMTP host for sending email account (e.g. `smtp.gmail.com`)
     - `ssl` `true` or `false` for SSL
 - `accounts` An array of accounts or organizations whose repositories can be used with this server
+
+You can also adjust `build.sh` and `publish.sh` to suit your workflow. By default, they generate a site with Jekyll and publish it to an NGINX web directory.
+
 ## Usage
 
 - run as executable: `$ ./jekyll-hook.js`
