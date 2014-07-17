@@ -1,6 +1,12 @@
 # jekyll-hook
 
-A server that listens for webhook posts from GitHub, generates a website with Jekyll, and moves it somewhere to be published. Use this to run your own GitHub Pages-style web server. Great for when you need to serve your websites behind a firewall, need extra server-level features like HTTP basic auth (see below for an NGINX config with basic auth), or want to host your site directly on a CDN or file host like S3. It's cutomizable with two user-configurable shell scripts and a config file.
+A server that listens for webhook posts from GitHub, generates a website with
+Jekyll, and moves it somewhere to be published. Use this to run your own GitHub
+Pages-style web server. Great for when you need to serve your websites behind a
+firewall, need extra server-level features like HTTP basic auth (see below for an
+NGINX config with basic auth), or want to host your site directly on a CDN or
+file host like S3. It's cutomizable with two user-configurable shell scripts
+and a config file.
 
 *This guide is tested on Ubuntu 14.0*
 
@@ -11,15 +17,17 @@ First install main dependencies
     $: sudo apt-get update
     $: sudo apt-get install git nodejs ruby ruby1.9.1-dev npm
 
+Symlink nodejs to node
+
+    $: sudo ln -s /usr/bin/nodejs /usr/bin/node
+
 To keep server running we use Forever:
 
     $: sudo npm install -g forever
 
 We also need Jekyll and Nginx
 
-    $: sudo gem install jekyll
-    $: sudo gem install rdiscount
-    $: sudo gem install json
+    $: sudo gem install jekyll rdiscount json
     $: sudo apt-get install nginx
 
 ## Installation
@@ -30,9 +38,15 @@ Clone the repo
 
 Install dependencies:
 
-    $: npm install
+    $: cd jekyll-hook
+    jekyll-hook $: npm install
 
-Set a [Web hook]() on your GitHub repository that points to your jekyll-hook server `http://example.com:8080/hooks/jekyll/:branch`, where `:branch` is the branch you want to publish. Usually this is `gh-pages` or `master` for `*.github.com` / `*.github.io` repositories.
+If you receive an error similar to this `npm ERR! Error: EACCES, mkdir
+'/home/ubuntu/tmp/npm-2223-4myn3niN'` run:
+
+    $: sudo chown -R ubuntu:ubuntu /home/ubuntu/tmp
+
+*You should replace `ubuntu` with your username*
 
 ## Configuration
 
@@ -45,21 +59,55 @@ Configuration attributes:
 
 - `gh_server` The GitHub server from which to pull code, e.g. github.com
 - `temp` A directory to store code and site files
+- `public-repo` Whether the repo is public or private (default is public)
 - `scripts`
     - `build` A script to run to build the site
     - `publish` A script to run to publish the site
 - `email` Optional. Settings for sending email alerts
+    - `isActivated` If set to true email will be sent after each trigger
     - `user` Sending email account's user name (e.g. `example@gmail.com`)
     - `password` Sending email account's password
     - `host` SMTP host for sending email account (e.g. `smtp.gmail.com`)
     - `ssl` `true` or `false` for SSL
-- `accounts` An array of accounts or organizations whose repositories can be used with this server
+- `accounts` An array of accounts or organizations whose repositories can be used
+with this server
 
-You can also adjust `build.sh` and `publish.sh` to suit your workflow. By default, they generate a site with Jekyll and publish it to an NGINX web directory.
+You can also adjust `build.sh` and `publish.sh` to suit your workflow. By default,
+they generate a site with Jekyll and publish it to an NGINX web directory.
 
-## Usage
+## Webhook Setup on Github
 
-- run as executable: `$ ./jekyll-hook.js`
+Set a [Web hook](https://developer.github.com/webhooks/) on your GitHub repository
+that points to your jekyll-hook server `http://example.com:8080/hooks/jekyll/:branch`, where `:branch` is the branch you want to publish. Usually this is `gh-pages` or `master` for `*.github.com` / `*.github.io` repositories.
+
+## Configure a webserver (nginx)
+
+The default `publish.sh` is setup for nginx and copies `_site` folder to `/usr/share/nginx/html/rep_name`.
+
+If you would like to copy the website to another location, make sure to update
+nginx virtual hosts which is located at `/etc/nginx/nginx/site-available` on Ubuntu 14.
+
+You also need to update `publish.sh`
+
+For more information Google or [read this](https://www.digitalocean.com/community/tutorials/how-to-configure-the-nginx-web-server-on-a-virtual-private-server):
+
+## Launch
+
+    $: ./jekyll-hook.js
+
+To launch in background run:
+
+    $: forever start jekyll-hook.js
+
+To kill the background job:
+
+```
+    $: forever list
+    info:    Forever processes running
+    data:        uid  command         script         forever pid  logfile                        uptime
+    data:    [0] ZQMF /usr/bin/nodejs jekyll-hook.js 4166    4168 /home/ubuntu/.forever/ZQMF.log 0:0:1:22.176
+    $: forever stop 0
+```
 
 ## Publishing content
 
@@ -87,39 +135,5 @@ server {
 
 Replace this script with whatever you need for your particular hosting environment.
 
-You probably want to configure your server to only respond POST requests from GitHub's public IP addresses, found on the webhooks settings page.
-
-## Dependencies
-
-Here's a sample script to install the approriate dependencies on an Ubuntu server:
-
-```sh
-#!/bin/sh
-
-# Install node and depencencies
-sudo apt-get update -y
-sudo apt-get install python-software-properties python g++ make -y
-# On Ubuntu 12.10 and greater, add-apt-repository is provided by the software-properties-common package
-#sudo apt-get install software-properties-common -y
-sudo add-apt-repository ppa:chris-lea/node.js -y
-sudo apt-get update -y
-sudo apt-get install nodejs -y
-
-# Forever to keep server running
-sudo npm install -g forever
-
-# Git
-sudo apt-get install git -y
-
-# Ruby
-sudo apt-get install ruby1.8 -y
-sudo apt-get install rubygems -y
-
-# Jekyll
-sudo gem install jekyll --version "0.12.0"
-sudo gem install rdiscount -- version "1.6.8"
-sudo gem install json --version "1.6.1"
-
-# Nginx for static content
-sudo apt-get install nginx -y
-```
+You probably want to configure your server to only respond POST requests from GitHub's
+public IP addresses, found on the webhooks settings page.
