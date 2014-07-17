@@ -25,5 +25,5 @@ cd -
 
 # Run jekyll
 cd $source
-jekyll $source $build --no-server --no-auto
+jekyll build -s $source -d $build
 cd -
