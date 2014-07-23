@@ -8,13 +8,14 @@
         "email": "info@developmentseed.org"
     },
     "contributors": [
-        "Dave Cole <dave@developmentseed.org>"
+        "Dave Cole <dave@developmentseed.org>",
+        "Alireza J <alireza@developmentseed.org>"
     ],
     "repository": {
         "type": "git",
         "url": "git://github.com/developmentseed/jekyll-hook.git"
     },
-    "version": "0.1.0",
+    "version": "0.2.0",
     "dependencies": {
         "express": "3.x",
         "emailjs": "0.3.4",
