@@ -80,7 +80,7 @@ app.post('/hooks/jekyll/:branch', function(req, res) {
 
                 // Done running scripts
                 console.log('Successfully rendered: ' + data.owner + '/' + data.repo);
-                send('Your website at ' + data.owner + '/' + data.repo + ' was succesfully published.', 'Succesfully published site', data);
+                send('Your website at ' + data.owner + '/' + data.repo + ' was successfully published.', 'Successfully published site', data);
 
                 if (typeof cb === 'function') cb();
                 return;
