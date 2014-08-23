@@ -10,7 +10,6 @@ var spawn   = require('child_process').spawn;
 var email   = require('emailjs/email');
 var mailer  = email.server.connect(config.email);
 var crypto  = require('crypto');
-var hmac    = crypto.createHmac('sha1', config.secret);
 
 app.use(express.bodyParser({
     verify: function(req,res,buffer){
@@ -23,6 +22,7 @@ app.use(express.bodyParser({
             return;
         }
 
+        var hmac         = crypto.createHmac('sha1', config.secret);
         var recieved_sig = req.headers['x-hub-signature'].split('=')[1];
         var computed_sig = hmac.update(buffer).digest('hex');
 
