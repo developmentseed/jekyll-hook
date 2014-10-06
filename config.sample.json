@@ -1,6 +1,7 @@
 {
     "gh_server": "github.com",
     "temp": "/home/ubuntu/jekyll-hook",
+    "site_parent": "/usr/share/nginx/html",
     "public_repo": true,
     "scripts": {
         "build": "./scripts/build.sh",
