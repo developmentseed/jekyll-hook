@@ -82,6 +82,8 @@ app.post('/hooks/jekyll/:branch', function(req, res) {
         /* source */ params.push(config.temp + '/' + data.owner + '/' + data.repo + '/' + data.branch + '/' + 'code');
         /* build  */ params.push(config.temp + '/' + data.owner + '/' + data.repo + '/' + data.branch + '/' + 'site');
 
+        /* site parent  */ params.push(config.site_parent);
+
         // Run build script
         run(config.scripts.build, params, function(err) {
             if (err) {

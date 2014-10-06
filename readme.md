@@ -60,6 +60,7 @@ Configuration attributes:
 
 - `gh_server` The GitHub server from which to pull code, e.g. github.com
 - `temp` A directory to store code and site files
+- `site_parent` Parent directory of where `_site` will be copied with the default `publish.sh`
 - `public-repo` Whether the repo is public or private (default is public)
 - `scripts`
     - `build` A script to run to build the site
@@ -83,7 +84,7 @@ that points to your jekyll-hook server `http://example.com:8080/hooks/jekyll/:br
 
 ## Configure a webserver (nginx)
 
-The default `publish.sh` is setup for nginx and copies `_site` folder to `/usr/share/nginx/html/rep_name`.
+The default `publish.sh` and `config.sample.json` are setup for nginx and copy `_site` folder to `/usr/share/nginx/html/repo_name`.
 
 If you would like to copy the website to another location, make sure to update
 nginx virtual hosts which is located at `/etc/nginx/nginx/site-available` on Ubuntu 14.
