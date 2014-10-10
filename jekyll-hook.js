@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+//#!/usr/bin/env node
 
 var config  = require('./config.json');
 var fs      = require('fs');
@@ -32,25 +32,30 @@ app.use(express.bodyParser({
             err.status = 403;
             throw err;
         }
+
+        req.request_verified = true;
     }
 
 }));
 
 // Receive webhook post
-app.post('/hooks/jekyll/:branch', function(req, res) {
-
+app.post('/hooks/jekyll/*', function(req, res) {
+    // Prevent non verified request from reaching this.
+    if (!req.request_verified) {
+        return res.status(403).send('The request could not be verified.');
+    }
     // Close connection
     res.send(202);
 
     // Queue request handler
     tasks.defer(function(req, res, cb) {
         var data = req.body;
-        var branch = req.params.branch;
+        var branch = req.params[0];
         var params = [];
 
         // Parse webhook data for internal variables
         data.repo = data.repository.name;
-        data.branch = data.ref.split('/')[2];
+        data.branch = data.ref.replace('refs/heads/', '');
         data.owner = data.repository.owner.name;
 
         // End early if not permitted account
