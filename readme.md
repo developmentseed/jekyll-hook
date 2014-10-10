@@ -62,8 +62,12 @@ Configuration attributes:
 - `temp` A directory to store code and site files
 - `public-repo` Whether the repo is public or private (default is public)
 - `scripts`
-    - `build` A script to run to build the site
-    - `publish` A script to run to publish the site
+    - `[branch-name]` (optional)
+        - `build` The build script to run for a specific branch.
+        - `publish` The publish script to run for a specific branch.
+    - `#default`
+        - `build` The build script to run if no match was found for the branch specified in the webhook.
+        - `publish` The publish script to run if match was found for the branch specified in the webhook.
 - `email` Optional. Settings for sending email alerts
     - `isActivated` If set to true email will be sent after each trigger
     - `user` Sending email account's user name (e.g. `example@gmail.com`)
@@ -80,6 +84,8 @@ they generate a site with Jekyll and publish it to an NGINX web directory.
 
 Set a [Web hook](https://developer.github.com/webhooks/) on your GitHub repository
 that points to your jekyll-hook server `http://example.com:8080/hooks/jekyll/:branch`, where `:branch` is the branch you want to publish. Usually this is `gh-pages` or `master` for `*.github.com` / `*.github.io` repositories.
+
+For every branch you want to build/publish (as defined in the `scripts`) you need to set up a different webhook.
 
 ## Configure a webserver (nginx)
 

@@ -3,8 +3,10 @@
     "temp": "/home/ubuntu/jekyll-hook",
     "public_repo": true,
     "scripts": {
+      "#default": {
         "build": "./scripts/build.sh",
         "publish": "./scripts/publish.sh"
+      }
     },
     "secret": "",
     "email": {

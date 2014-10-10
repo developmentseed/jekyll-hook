@@ -32,18 +32,12 @@ app.use(express.bodyParser({
             err.status = 403;
             throw err;
         }
-
-        req.request_verified = true;
     }
 
 }));
 
 // Receive webhook post
 app.post('/hooks/jekyll/*', function(req, res) {
-    // Prevent non verified request from reaching this.
-    if (!req.request_verified) {
-        return res.status(403).send('The request could not be verified.');
-    }
     // Close connection
     res.send(202);
 
@@ -87,8 +81,35 @@ app.post('/hooks/jekyll/*', function(req, res) {
         /* source */ params.push(config.temp + '/' + data.owner + '/' + data.repo + '/' + data.branch + '/' + 'code');
         /* build  */ params.push(config.temp + '/' + data.owner + '/' + data.repo + '/' + data.branch + '/' + 'site');
 
+        // Script by branch.
+        var build_script = null;
+        try {
+          build_script = config.scripts[data.branch].build;
+        }
+        catch(err) {
+          try {
+            build_script = config.scripts['#default'].build;
+          }
+          catch(err) {
+            throw new Error('No default build script defined.');
+          }
+        }
+        
+        var publish_script = null;
+        try {
+          publish_script = config.scripts[data.branch].publish;
+        }
+        catch(err) {
+          try {
+            publish_script = config.scripts['#default'].publish;
+          }
+          catch(err) {
+            throw new Error('No default publish script defined.');
+          }
+        }
+
         // Run build script
-        run(config.scripts.build, params, function(err) {
+        run(build_script, params, function(err) {
             if (err) {
                 console.log('Failed to build: ' + data.owner + '/' + data.repo);
                 send('Your website at ' + data.owner + '/' + data.repo + ' failed to build.', 'Error building site', data);
@@ -98,7 +119,7 @@ app.post('/hooks/jekyll/*', function(req, res) {
             }
 
             // Run publish script
-            run(config.scripts.publish, params, function(err) {
+            run(publish_script, params, function(err) {
                 if (err) {
                     console.log('Failed to publish: ' + data.owner + '/' + data.repo);
                     send('Your website at ' + data.owner + '/' + data.repo + ' failed to publish.', 'Error publishing site', data);
