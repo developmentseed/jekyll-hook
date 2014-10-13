@@ -1,4 +1,4 @@
-//#!/usr/bin/env node
+#!/usr/bin/env node
 
 var config  = require('./config.json');
 var fs      = require('fs');
