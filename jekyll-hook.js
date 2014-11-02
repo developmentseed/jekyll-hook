@@ -39,6 +39,20 @@ app.use(express.bodyParser({
 // Receive webhook post
 app.post('/hooks/jekyll/:branch', function(req, res) {
 
+    // Ensure that we return 200 Ok on ping and an error on other requests that
+    // aren't 'push'
+    var ghEvent = req.get('X-GitHub-Event');
+    if (ghEvent == 'ping') {
+        console.log('Received ping.');
+        res.send(200);
+        return;
+    }
+    else if (ghEvent != 'push') {
+        console.log('Received unsupported event: ' + ghEvent);
+        res.send(400);
+        return;
+    }
+
     // Close connection
     res.send(202);
 
