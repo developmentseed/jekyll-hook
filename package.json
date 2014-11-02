@@ -9,7 +9,8 @@
     },
     "contributors": [
         "Dave Cole <dave@developmentseed.org>",
-        "Alireza J <alireza@developmentseed.org>"
+        "Alireza J <alireza@developmentseed.org>",
+        "@danielfdsilva"
     ],
     "repository": {
         "type": "git",
