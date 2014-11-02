@@ -37,20 +37,19 @@ app.use(express.bodyParser({
 }));
 
 // Receive webhook post
-app.post('/hooks/jekyll/:branch', function(req, res) {
-
+app.post('/hooks/jekyll/*', function(req, res) {
     // Close connection
     res.send(202);
 
     // Queue request handler
     tasks.defer(function(req, res, cb) {
         var data = req.body;
-        var branch = req.params.branch;
+        var branch = req.params[0];
         var params = [];
 
         // Parse webhook data for internal variables
         data.repo = data.repository.name;
-        data.branch = data.ref.split('/')[2];
+        data.branch = data.ref.replace('refs/heads/', '');
         data.owner = data.repository.owner.name;
 
         // End early if not permitted account
@@ -82,8 +81,35 @@ app.post('/hooks/jekyll/:branch', function(req, res) {
         /* source */ params.push(config.temp + '/' + data.owner + '/' + data.repo + '/' + data.branch + '/' + 'code');
         /* build  */ params.push(config.temp + '/' + data.owner + '/' + data.repo + '/' + data.branch + '/' + 'site');
 
+        // Script by branch.
+        var build_script = null;
+        try {
+          build_script = config.scripts[data.branch].build;
+        }
+        catch(err) {
+          try {
+            build_script = config.scripts['#default'].build;
+          }
+          catch(err) {
+            throw new Error('No default build script defined.');
+          }
+        }
+        
+        var publish_script = null;
+        try {
+          publish_script = config.scripts[data.branch].publish;
+        }
+        catch(err) {
+          try {
+            publish_script = config.scripts['#default'].publish;
+          }
+          catch(err) {
+            throw new Error('No default publish script defined.');
+          }
+        }
+
         // Run build script
-        run(config.scripts.build, params, function(err) {
+        run(build_script, params, function(err) {
             if (err) {
                 console.log('Failed to build: ' + data.owner + '/' + data.repo);
                 send('Your website at ' + data.owner + '/' + data.repo + ' failed to build.', 'Error building site', data);
@@ -93,7 +119,7 @@ app.post('/hooks/jekyll/:branch', function(req, res) {
             }
 
             // Run publish script
-            run(config.scripts.publish, params, function(err) {
+            run(publish_script, params, function(err) {
                 if (err) {
                     console.log('Failed to publish: ' + data.owner + '/' + data.repo);
                     send('Your website at ' + data.owner + '/' + data.repo + ' failed to publish.', 'Error publishing site', data);
