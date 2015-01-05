@@ -68,6 +68,7 @@ Configuration attributes:
     - `#default`
         - `build` The build script to run if no match was found for the branch specified in the webhook.
         - `publish` The publish script to run if match was found for the branch specified in the webhook.
+- `secret` Optional. GitHub webhook secret.
 - `email` Optional. Settings for sending email alerts
     - `isActivated` If set to true email will be sent after each trigger
     - `user` Sending email account's user name (e.g. `example@gmail.com`)
