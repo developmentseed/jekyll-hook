@@ -1,7 +1,6 @@
-#!/usr/bin/env node
+'use strict';
 
 var config  = require('./config.json');
-var fs      = require('fs');
 var express = require('express');
 var app     = express();
 var queue   = require('queue-async');
@@ -17,8 +16,8 @@ app.use(express.bodyParser({
             return;
         }
 
-        if(!config.secret || config.secret==""){
-            console.log("Recieved a X-Hub-Signature header, but cannot validate as no secret is configured");
+        if(!config.secret || config.secret === ''){
+            console.log('Recieved a X-Hub-Signature header, but cannot validate as no secret is configured');
             return;
         }
 
@@ -94,7 +93,7 @@ app.post('/hooks/jekyll/*', function(req, res) {
             throw new Error('No default build script defined.');
           }
         }
-        
+
         var publish_script = null;
         try {
           publish_script = config.scripts[data.branch].publish;
