@@ -1,26 +1,30 @@
 {
-    "name": "jekyll-hook",
-    "description": "A server that listens for GitHub webhook posts and renders a Jekyll site",
-    "homepage": "http://github.com/developmentseed/jekyll-hook",
-    "author": {
-        "name": "Development Seed",
-        "url": "http://developmentseed.org/",
-        "email": "info@developmentseed.org"
-    },
-    "contributors": [
-        "Dave Cole <dave@developmentseed.org>",
-        "Alireza J <alireza@developmentseed.org>",
-        "@danielfdsilva"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/developmentseed/jekyll-hook.git"
-    },
-    "version": "0.2.0",
-    "dependencies": {
-        "express": "3.x",
-        "emailjs": "0.3.4",
-        "queue-async": "1.0.x"
-    },
-    "private": true
+  "name": "jekyll-hook",
+  "description": "A server that listens for GitHub webhook posts and renders a Jekyll site",
+  "homepage": "http://github.com/developmentseed/jekyll-hook",
+  "author": {
+    "name": "Development Seed",
+    "url": "http://developmentseed.org/",
+    "email": "info@developmentseed.org"
+  },
+  "contributors": [
+    "Dave Cole <dave@developmentseed.org>",
+    "@sisco",
+    "@danielfdsilva"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/developmentseed/jekyll-hook.git"
+  },
+  "version": "0.5.0",
+  "dependencies": {
+    "async": "^0.9.0",
+    "emailjs": "^0.3.4",
+    "fs-extra": "^0.16.3",
+    "githubhook": "^1.1.3",
+    "queue-async": "^1.0.x",
+    "s3": "^4.3.1",
+    "underscore": "^1.7.0"
+  },
+  "private": true
 }

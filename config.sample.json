@@ -1,7 +1,10 @@
 {
-    "gh_server": "github.com",
-    "temp": "/home/ubuntu/jekyll-hook",
-    "public_repo": true,
+    "temp": null,
+    "branch": "master",
+    "repoName": "myRepo",
+    "githubHook": "/hooks/jekyll",
+    "gitUser": "",
+    "gitPass": "",
     "scripts": {
       "#default": {
         "build": "./scripts/build.sh",
@@ -16,7 +19,20 @@
         "host": "",
         "ssl": true
     },
-    "accounts": [
-        "developmentseed"
-    ]
+    "copyDir": null,
+    "s3": {
+        "isActivated": false,
+        "bucket": "myBucket",
+        "options": {
+            "maxAsyncS3": 20,
+            "s3RetryCount": 3,
+            "s3RetryDelay": 1000,
+            "multipartUploadThreshold": 20971520,
+            "multipartUploadSize": 15728640,
+            "s3Options": {
+                "accessKeyId": "your s3 key",
+                "secretAccessKey": "your s3 secret"
+            }
+        }
+    }
 }

@@ -1,173 +1,91 @@
-'use strict';
-
+var githubhook = require('githubhook');
+var join = require('path').join;
+var fse = require('fs-extra');
+var async = require('async');
 var config  = require('./config.json');
-var express = require('express');
-var app     = express();
-var queue   = require('queue-async');
-var tasks   = queue(1);
-var spawn   = require('child_process').spawn;
-var email   = require('emailjs/email');
-var mailer  = email.server.connect(config.email);
-var crypto  = require('crypto');
+var build = require('./lib/build.js');
+var publish = require('./lib/publish.js');
+var email = require('./lib/email.js');
 
-app.use(express.bodyParser({
-    verify: function(req,res,buffer){
-        if(!req.headers['x-hub-signature']){
-            return;
-        }
 
-        if(!config.secret || config.secret === ''){
-            console.log('Recieved a X-Hub-Signature header, but cannot validate as no secret is configured');
-            return;
-        }
+var repo = config.repoName;
 
-        var hmac         = crypto.createHmac('sha1', config.secret);
-        var recieved_sig = req.headers['x-hub-signature'].split('=')[1];
-        var computed_sig = hmac.update(buffer).digest('hex');
+var githubHook = config.githubHook || '/hooks/jekyll';
+var githubPort = process.env.PORT || '8080';
+var github = githubhook({
+  path: githubHook,
+  port: githubPort,
+  secret: config.secret,
+  logger: console
+});
 
-        if(recieved_sig != computed_sig){
-            console.warn('Recieved an invalid HMAC: calculated:' + computed_sig + ' != recieved:' + recieved_sig);
-            var err = new Error('Invalid Signature');
-            err.status = 403;
-            throw err;
-        }
+
+var tmp = config.temp || join(__dirname, 'tmp');
+
+// Create tmp directory if doesn't exist
+fse.mkdirs(tmp, function (err) {
+  if (err) return console.error(err);
+
+  console.log('tmp directory created!');
+});
+
+github.on('push:' + repo , function (ref, data) {
+
+  var gitUrl = build.gitUrl(data.repository.fullName, config.gitUser, config.gitPass);
+
+  /* source */
+  var sourceDir = join(tmp, repo, config.branch, 'code');
+
+  /* build  */
+  var buildDir = join(tmp, repo, config.branch, 'site');
+
+  async.series([
+    function(callback) {
+      console.log('Starting the build process');
+      build.jekyll(sourceDir, buildDir, gitUrl, config.branch, callback);
+    },
+    function(callback) {
+      if (config.copyDir) {
+        publish.copy(buildDir, config.copyDir, repo, callback);
+      }
+      else if (config.s3.isActivated) {
+        publish.s3(config.s3, buildDir, callback);
+      }
+      else {
+        callback();
+      }
+    }],
+  function(err) {
+    if (err) {
+      console.log(err);
+      endWithFailure(repo, data, err);
     }
-
-}));
-
-// Receive webhook post
-app.post('/hooks/jekyll/*', function(req, res) {
-    // Close connection
-    res.send(202);
-
-    // Queue request handler
-    tasks.defer(function(req, res, cb) {
-        var data = req.body;
-        var branch = req.params[0];
-        var params = [];
-
-        // Parse webhook data for internal variables
-        data.repo = data.repository.name;
-        data.branch = data.ref.replace('refs/heads/', '');
-        data.owner = data.repository.owner.name;
-
-        // End early if not permitted account
-        if (config.accounts.indexOf(data.owner) === -1) {
-            console.log(data.owner + ' is not an authorized account.');
-            if (typeof cb === 'function') cb();
-            return;
-        }
-
-        // End early if not permitted branch
-        if (data.branch !== branch) {
-            console.log('Not ' + branch + ' branch.');
-            if (typeof cb === 'function') cb();
-            return;
-        }
-
-        // Process webhook data into params for scripts
-        /* repo   */ params.push(data.repo);
-        /* branch */ params.push(data.branch);
-        /* owner  */ params.push(data.owner);
-
-        /* giturl */
-        if (config.public_repo) {
-            params.push('https://' + config.gh_server + '/' + data.owner + '/' + data.repo + '.git');
-        } else {
-            params.push('git@' + config.gh_server + ':' + data.owner + '/' + data.repo + '.git');
-        }
-
-        /* source */ params.push(config.temp + '/' + data.owner + '/' + data.repo + '/' + data.branch + '/' + 'code');
-        /* build  */ params.push(config.temp + '/' + data.owner + '/' + data.repo + '/' + data.branch + '/' + 'site');
-
-        // Script by branch.
-        var build_script = null;
-        try {
-          build_script = config.scripts[data.branch].build;
-        }
-        catch(err) {
-          try {
-            build_script = config.scripts['#default'].build;
-          }
-          catch(err) {
-            throw new Error('No default build script defined.');
-          }
-        }
-
-        var publish_script = null;
-        try {
-          publish_script = config.scripts[data.branch].publish;
-        }
-        catch(err) {
-          try {
-            publish_script = config.scripts['#default'].publish;
-          }
-          catch(err) {
-            throw new Error('No default publish script defined.');
-          }
-        }
-
-        // Run build script
-        run(build_script, params, function(err) {
-            if (err) {
-                console.log('Failed to build: ' + data.owner + '/' + data.repo);
-                send('Your website at ' + data.owner + '/' + data.repo + ' failed to build.', 'Error building site', data);
-
-                if (typeof cb === 'function') cb();
-                return;
-            }
-
-            // Run publish script
-            run(publish_script, params, function(err) {
-                if (err) {
-                    console.log('Failed to publish: ' + data.owner + '/' + data.repo);
-                    send('Your website at ' + data.owner + '/' + data.repo + ' failed to publish.', 'Error publishing site', data);
-
-                    if (typeof cb === 'function') cb();
-                    return;
-                }
-
-                // Done running scripts
-                console.log('Successfully rendered: ' + data.owner + '/' + data.repo);
-                send('Your website at ' + data.owner + '/' + data.repo + ' was successfully published.', 'Successfully published site', data);
-
-                if (typeof cb === 'function') cb();
-                return;
-            });
-        });
-    }, req, res);
+    else {
+      endWithSuccess(repo, data);
+    }
+  });
 
 });
 
-// Start server
-var port = process.env.PORT || 8080;
-app.listen(port);
-console.log('Listening on port ' + port);
+function endWithFailure(repo, data, err) {
+  console.log('Process did not complete. Error: ' + err);
 
-function run(file, params, cb) {
-    var process = spawn(file, params);
-
-    process.stdout.on('data', function (data) {
-        console.log('' + data);
-    });
-
-    process.stderr.on('data', function (data) {
-        console.warn('' + data);
-    });
-
-    process.on('exit', function (code) {
-        if (typeof cb === 'function') cb(code !== 0);
-    });
+  email.send(
+    config.email,
+    'Your website at ' + repo + ' failed to build.' + err, 'Error building site',
+    data
+  );
 }
 
-function send(body, subject, data) {
-    if (config.email && config.email.isActivated && data.pusher.email) {
-        var message = {
-            text: body,
-            from: config.email.user,
-            to: data.pusher.email,
-            subject: subject
-        };
-        mailer.send(message, function(err) { if (err) console.warn(err); });
-    }
+function endWithSuccess(repo, data) {
+  console.log('===> Process completed!');
+
+  email.send(
+    config.email,
+    'Your website at ' + repo + ' was successfully published.',
+    'Successfully published site', data
+  );
 }
+
+
+github.listen();
