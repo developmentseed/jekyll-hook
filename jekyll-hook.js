@@ -45,18 +45,18 @@ fse.mkdirs(tmp, function (err) {
 
 github.on('push:' + repo , function (ref, data) {
 
-  var gitUrl = build.gitUrl(data.repository.fullName, config.gitUser, config.gitPass);
+  var gitUrl = build.gitUrl(data.repository.full_name, config.gitUser, config.gitPass);
 
   /* source */
   var sourceDir = join(tmp, repo, config.branch, 'code');
 
   /* build  */
-  var buildDir = join(tmp, repo, config.branch, 'site');
+  var buildDir = join(sourceDir, '_site');
 
   async.series([
     function(callback) {
       console.log('Starting the build process');
-      build.jekyll(sourceDir, buildDir, gitUrl, config.branch, callback);
+      build.jekyll(sourceDir, gitUrl, config.branch, callback);
     },
     function(callback) {
       if (config.copyDir) {
