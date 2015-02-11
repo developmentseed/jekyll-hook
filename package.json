@@ -16,6 +16,10 @@
     "type": "git",
     "url": "git://github.com/developmentseed/jekyll-hook.git"
   },
+  "engines": {
+    "node": "0.10.29",
+    "npm": "1.4.14"
+  },
   "version": "0.5.0",
   "dependencies": {
     "async": "^0.9.0",
