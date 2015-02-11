@@ -56,7 +56,7 @@ github.on('push:' + repo , function (ref, data) {
   async.series([
     function(callback) {
       console.log('Starting the build process');
-      build.jekyll(sourceDir, gitUrl, config.branch, callback);
+      build.jekyll(sourceDir, buildDir, gitUrl, config.branch, callback);
     },
     function(callback) {
       if (config.copyDir) {
