@@ -1,3 +1,5 @@
 source 'https://rubygems.org'
 ruby '2.1.2'
 gem 'jekyll', '~>2.5.3'
+gem 'RedCloth', '~>4.2.9'
+gem 'rdiscount', '~>2.1.8'
