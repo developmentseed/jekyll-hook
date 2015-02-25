@@ -12,7 +12,8 @@ giturl=$4
 source=$5
 build=$6
 
-
+# This function retry the input command 10 times
+# in case the command returns non-zero indicating command failure
 safeRunCommand() {
 typeset cmnd="$*"
 typeset ret_code
