@@ -141,7 +141,7 @@ app.post('/hooks/jekyll/*', function(req, res) {
 });
 
 // Start server
-var port = process.env.PORT || 8080;
+var port = process.env.PORT || config.listen || 8080;
 app.listen(port);
 console.log('Listening on port ' + port);
 
