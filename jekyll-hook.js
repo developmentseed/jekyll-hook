@@ -60,7 +60,8 @@ app.post('/hooks/jekyll/*', function(req, res) {
         }
 
         // End early if not permitted branch
-        if (data.branch !== branch) {
+        branchArray = data.ref.split("/")
+        if (branchArray[branchArray.length - 1] !== branch.substring(1, branch.length)) {
             console.log('Not ' + branch + ' branch.');
             if (typeof cb === 'function') cb();
             return;
