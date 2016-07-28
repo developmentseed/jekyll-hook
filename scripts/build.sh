@@ -25,5 +25,6 @@ cd -
 
 # Run jekyll
 cd $source
+[ -f Gemfile ] && (bundle check || bundle install)
 jekyll build -s $source -d $build
 cd -
