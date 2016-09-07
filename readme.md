@@ -1,5 +1,7 @@
 # jekyll-hook
 
+**Note:** This tool is **no longer maintained**. There are a number of newer and better approaches to update jekyll-powered websites. We use Continious Integration (e.g. Travis) as a replacement for jekyll-hook at Development Seed. Read more here: https://jekyllrb.com/docs/deployment-methods/
+
 A server that listens for webhook posts from GitHub, generates a website with
 Jekyll, and moves it somewhere to be published. Use this to run your own GitHub
 Pages-style web server. Great for when you need to serve your websites behind a
